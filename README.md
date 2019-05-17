@@ -1,12 +1,12 @@
 # Detecting complex spikes in extracellular recording  
-Deep learning based detection of complex spikes  
+Deep learning-based detection of complex spikes  
 
 You can find our preprint article on bioRxiv: https://www.biorxiv.org/content/biorxiv/early/2019/04/05/600536.full.pdf
 
 The scripts are written in colaboratory: 
 https://research.google.com/colaboratory/faq.html  
 This enables simple installation because it works online  
-Also we can use the GPUs that google freely provides  
+Also, we can use the GPUs that google freely provides  
 
 
 ## Installation:  
