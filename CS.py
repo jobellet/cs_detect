@@ -123,8 +123,8 @@ def norm_high_pass(high_pass): # normalise the LFP for the network
             # normalise high_pass as a multiple of absolute median
             high_pass = [i/np.median(np.abs(i)) for i in high_pass ]
     else:
-        LFP = []     
-    return(LFP)
+        high_pass = []     
+    return(high_pass)
 
        
 def load_data(filename = [],field_LFP = [],field_high_pass = [], field_label = []):
