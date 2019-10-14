@@ -32,6 +32,9 @@ matplotlib.style.use('classic')
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42
 
+# to perform signal processing
+from scipy.signal import butter, lfilter
+from scipy import signal as signal
 
 
 def get_field_mat(data,fields): # go through structure in a .mat file to find the variable
@@ -53,7 +56,6 @@ def get_field_mat(data,fields): # go through structure in a .mat file to find th
             data = data[field]
         return(data)
         
-      
       
 def get_field_pkl(df,field): # get the variable in a panda dataframe
     if field != None:
@@ -78,23 +80,53 @@ def list2array(mylist): # convert a list into an array of segments of equal leng
         myarray = []
     return(myarray)
   
-  
+
+def butter_bandpass(lowcut, highcut, fs, order=5):
+    nyq = 0.5 * fs
+    low = lowcut / nyq
+    high = highcut / nyq
+    b, a = butter(order, [low, high], btype='band')
+    return b, a
+
 def norm_LFP(LFP): # normalise the LFP for the network
     if len(LFP) > 0:
         
         types = [hasattr(LFP[i],"__len__") for i in range(len(LFP))]
         if all(types) == 0 : #surely a vector
             LFP = np.asarray(LFP)
-            LFP = LFP-np.median(LFP)
-            LFP = LFP/np.median(np.abs(LFP))
+            
+            b, a = butter_bandpass(30, 400, 25000, order = 2)
+
+            LFP =  signal.filtfilt(b, a, np.double(np.asarray(LFP))) 
+            LFP /= np.median(np.abs(LFP))
+            
+
         else:
             # normalise LFP as a multiple of absolute median
-            LFP = [i-np.median(i) for i in LFP ]
+            b, a = butter_bandpass(30, 400, 25000, order = 2)
+            LFP = [signal.filtfilt(b, a, np.double(np.asarray(i))) for i in LFP ]
             LFP = [i/np.median(np.abs(i)) for i in LFP ]
     else:
         LFP = []     
     return(LFP)
-    
+
+def norm_high_pass(high_pass): # normalise the LFP for the network
+    if len(high_pass) > 0:
+        
+        types = [hasattr(high_pass[i],"__len__") for i in range(len(high_pass))]
+        if all(types) == 0 : #surely a vector
+            high_pass = np.asarray(high_pass)
+            high_pass = np.double(high_pass)
+            high_pass /= np.median(np.abs(high_pass)) 
+
+        else:
+            # normalise high_pass as a multiple of absolute median
+            high_pass = [i/np.median(np.abs(i)) for i in high_pass ]
+    else:
+        LFP = []     
+    return(LFP)
+
+       
 def load_data(filename = [],field_LFP = [],field_high_pass = [], field_label = []):
     # loads the data for .mat .pkl or .csv
     if len(filename) == 0:
@@ -114,6 +146,7 @@ def load_data(filename = [],field_LFP = [],field_high_pass = [], field_label = [
         LFP = list2array(norm_LFP(np.loadtxt(field_LFP,delimiter=',')))
         high_pass = list2array(np.loadtxt(field_high_pass,delimiter=','))
         Label = list2array(np.loadtxt(field_label,delimiter=','))
+    high_pass = norm_high_pass(high_pass) 
     return(LFP,high_pass,Label)
 
 def save_data(output_file,labels):
@@ -137,7 +170,7 @@ def save_data(output_file,labels):
         df.to_hdf(output_file, key='df', mode='w')
         
         
-def detect_CS(weights_name, LFP, High_passed, output_name = None,  sampling_frequency = 25000, ks=9,mp=7, realign = True, alignment_w = (-.5,2), cluster = True, cluster_w = (-2,2),plot = False, plot_w= (-4,8),plot_only_good = True, exlude_w = 3):
+def detect_CS(weights_name, LFP, High_passed, output_name = None,  sampling_frequency = 25000, ks=9,mp=7, exlude_w = 3,realign = True, alignment_w = (-.5,2), cluster = True, cluster_w = (-2,2),plot = False, plot_w= (-4,8),plot_only_good = True):
     # important arguments:
     # -filename is the filename path. If it is not defined then you should input the LFP and the High-passed signal
     # -weights_name is the path of the weight or just the name of the weight if it is stored in /training
