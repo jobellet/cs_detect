@@ -110,7 +110,7 @@ def norm_LFP(LFP): # normalise the LFP for the network
         LFP = []     
     return(LFP)
 
-def norm_high_pass(high_pass): # normalise the LFP for the network
+def norm_high_pass(high_pass): # normalise the high pass signal for the network
     if len(high_pass) > 0:
         
         types = [hasattr(high_pass[i],"__len__") for i in range(len(high_pass))]
