@@ -247,6 +247,8 @@ def detect_CS(weights_name, LFP, High_passed, output_name = None,  sampling_freq
     cs_offset=np.argwhere(np.diff(Prediction)==-1);
     cs_onset = np.concatenate(cs_onset)
     cs_offset = np.concatenate(cs_offset)
+    cs_offset = cs_offset[cs_offset>cs_onset[0]]
+    cs_onset = cs_onset[cs_onset<cs_offset[-1]]
     if cluster ==False & realign==False: # stop early if everything that is needed is the raw output from the network
         labels = {'cs_onset':cs_onset,
                    'cs_offset':cs_offset}
