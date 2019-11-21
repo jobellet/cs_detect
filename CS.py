@@ -259,11 +259,18 @@ def detect_CS(weights_name, LFP, High_passed, output_name = None,  sampling_freq
     cluster_window = (np.array([sampling_frequency*cluster_w[0],sampling_frequency*cluster_w[1]])/1000).astype(int)  # consider the first 2 ms after CS onset for clustering
     plot_window = (np.array([sampling_frequency*plot_w[0],sampling_frequency*plot_w[1]])/1000).astype(int) # plot between 4 ms before and 8 ms after CS onset
     
-    veto_wind = [-10,10] #exlude CS detected around 10ms from the boundary of the signal
-    veto_wind = [min(sampling_frequency*veto_wind[0],plot_w[0]),max(plot_w[1],sampling_frequency*veto_wind[1])]
-    # remove CS detected to close from the edges of the signal
-    cs_offset = cs_offset[(cs_onset>sampling_frequency*(-plot_w[0])/1000) & (cs_onset<len(Prediction)-sampling_frequency*plot_w[1]/1000)]
-    cs_onset = cs_onset[(cs_onset>sampling_frequency*(-plot_w[0])/1000) & (cs_onset<len(Prediction)-sampling_frequency*plot_w[1]/1000)]
+    veto_wind = [0,0]
+    if cluster:
+        veto_wind =  [sampling_frequency*min(veto_wind[0],cluster_window[0]),sampling_frequency*max(veto_wind[1],cluster_window[1])]
+    if realign:
+        veto_wind =  [sampling_frequency*min(veto_wind[0],alignment_w[0]),sampling_frequency*max(veto_wind[1],alignment_w[1])]
+    if plot:
+        veto_wind = [sampling_frequency*min(plot_w[0],veto_wind[0]),sampling_frequency*max(plot_w[1],veto_wind[1])]
+    
+    # remove CSs detected to close from the edges of the signal
+    too_close = (cs_onset>sampling_frequency*(-veto_wind[0])/1000) & (cs_offset<len(Prediction)-sampling_frequency*veto_wind[1]/1000)
+    cs_offset = cs_offset[too_close]
+    cs_onset = cs_onset[too_close]
 
     if len(cs_onset) == 0:
         labels = {'cs_onset': [],
