@@ -169,7 +169,16 @@ def save_data(output_file,labels):
     elif file_extension == '.h5' :
         df.to_hdf(output_file, key='df', mode='w')
         
-        
+def nothingfound(output_name): # when no CS are found
+    print('Warning : no complex spikes was found. Check your signals')
+    labels = {'cs_onset': [],
+                   'cs_offset': [],
+                   'cluster_ID': [],
+                 'embedding': []}
+    if output_name != None:
+        print('saving '+output_name)
+        save_data(output_name,labels)
+    return (labels)   
 def detect_CS(weights_name, LFP, High_passed, output_name = None,  sampling_frequency = 25000, ks=9,mp=7, exlude_w = 3,realign = True, alignment_w = (-.5,2), cluster = True, cluster_w = (-2,2),plot = False, plot_w= (-4,8),plot_only_good = True):
     # important arguments:
     # -filename is the filename path. If it is not defined then you should input the LFP and the High-passed signal
@@ -182,14 +191,8 @@ def detect_CS(weights_name, LFP, High_passed, output_name = None,  sampling_freq
     samp  = int(sampling_frequency/1000) # Khz
     
     if len(LFP)==0 or len(High_passed)==0: # if one signal is missing abort
-        labels = {'cs_onset': [],
-                   'cs_offset': [],
-                   'cluster_ID': [],
-                 'embedding': []}
-        if output_name != None:
-            print('saving '+output_name)
-            save_data(output_name,labels)
-        return([],[],[],[])
+        labels = nothingfound(output_name)
+        return(labels)
     
     trial_length = 1 #sec, length per "trial"
     trial_length *= samp*1000
@@ -275,13 +278,7 @@ def detect_CS(weights_name, LFP, High_passed, output_name = None,  sampling_freq
     cs_onset = cs_onset[not_too_close]
 
     if len(cs_onset) == 0:
-        labels = {'cs_onset': [],
-                   'cs_offset': [],
-                   'cluster_ID': [],
-                 'embedding': []}
-        if output_name != None:
-            print('saving '+output_name)
-            save_data(output_name,labels)
+        labels = nothingfound(output_name)
         return(labels)
     
     ######################################## 
@@ -358,13 +355,7 @@ def detect_CS(weights_name, LFP, High_passed, output_name = None,  sampling_freq
     # dimensionality reduction using UMAP
     n_neighbors = 15
     if np.shape(average_CS2)[0]<n_neighbors: # exit if the number of complex spike detected is too small
-        labels = {'cs_onset': [],
-                 'cs_offset': [],
-                 'cluster_ID': [],
-               'embedding': []}
-        if output_name!= None:
-            print('saving '+output_name)
-            save_data(output_name,labels)
+        labels = nothingfound(output_name)
         return(labels)
     
     embedding = umap.UMAP(n_neighbors = n_neighbors , min_dist=0.00001) 
@@ -446,7 +437,11 @@ def detect_CS(weights_name, LFP, High_passed, output_name = None,  sampling_freq
     cs_offset = cs_offset[include]
     
     cs_onset = cs_onset.astype('int')
-    cs_onset = np.concatenate(cs_onset)
+    try: 
+        cs_onset = np.concatenate(cs_onset)
+    except: # some times no complex spikes end up being detected
+        labels = nothingfound(output_name)
+        return(labels)
     cs_offset = cs_offset.astype('int')
 
     labels = {'cs_onset':cs_onset,
