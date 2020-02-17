@@ -105,14 +105,14 @@ def butter_bandpass(lowcut, highcut, fs, order=5):
     b, a = butter(order, [low, high], btype='band')
     return b, a
 
-def norm_LFP(LFP): # normalise the LFP for the network
+def norm_LFP(LFP,sampling_freq): # normalise the LFP for the network
     if len(LFP) > 0:
         
         types = [hasattr(LFP[i],"__len__") for i in range(len(LFP))]
         if all(types) == 0 : #surely a vector
             LFP = np.asarray(LFP)
             
-            b, a = butter_bandpass(30, 400, 25000, order = 2)
+            b, a = butter_bandpass(30, 400, sampling_freq, order = 2)
 
             LFP =  signal.filtfilt(b, a, np.double(np.asarray(LFP))) 
             LFP /= np.median(np.abs(LFP))
@@ -120,7 +120,7 @@ def norm_LFP(LFP): # normalise the LFP for the network
 
         else:
             # normalise LFP as a multiple of absolute median
-            b, a = butter_bandpass(30, 400, 25000, order = 2)
+            b, a = butter_bandpass(30, 400, sampling_freq, order = 2)
             LFP = [signal.filtfilt(b, a, np.double(np.asarray(i))) for i in LFP ]
             LFP = [i/np.median(np.abs(i)) for i in LFP ]
     else:
@@ -144,27 +144,30 @@ def norm_high_pass(high_pass): # normalise the high pass signal for the network
     return(high_pass)
 
        
-def load_data(filename = [],field_LFP = [],field_high_pass = [], field_label = []):
+def load_data(filename = [],field_LFP = [],field_high_pass = [], field_label = [],field_intervs = [],sampling_freq = 25000):
     # loads the data for .mat .pkl or .csv
     if len(filename) == 0:
         filename = field_LFP
     filename_start, file_extension = os.path.splitext(filename)
     if file_extension == '.pkl':
         df = pd.read_pickle(filename)
-        LFP = list2array(norm_LFP(get_field_pkl(df,field_LFP)))
+        LFP = list2array(norm_LFP(get_field_pkl(df,field_LFP),sampling_freq))
         high_pass = list2array(get_field_pkl(df,field_high_pass))
         Label = list2array(get_field_pkl(df,field_label))
+        Intervs = list2array(get_field_pkl(df,field_intervs))
     elif file_extension == '.mat':
         data = mat4py.loadmat(filename)
-        LFP = list2array(norm_LFP(get_field_mat(data,field_LFP)))
+        LFP = list2array(norm_LFP(get_field_mat(data,field_LFP),sampling_freq))
         high_pass = list2array(get_field_mat(data,field_high_pass))
         Label = list2array(get_field_mat(data,field_label))
+        Intervs = list2array(get_field_mat(df,field_intervs))
     elif file_extension == '.csv':
-        LFP = list2array(norm_LFP(np.loadtxt(field_LFP,delimiter=',')))
+        LFP = list2array(norm_LFP(np.loadtxt(field_LFP,delimiter=','),sampling_freq))
         high_pass = list2array(np.loadtxt(field_high_pass,delimiter=','))
         Label = list2array(np.loadtxt(field_label,delimiter=','))
+        Intervs = list2array(field_label(df,field_intervs))
     high_pass = norm_high_pass(high_pass) 
-    return(LFP,high_pass,Label)
+    return(LFP,high_pass,Label,Intervs)
 
 def save_data(output_file,labels):
     filename_start, file_extension = os.path.splitext(output_file)
