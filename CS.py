@@ -160,12 +160,12 @@ def load_data(filename = [],field_LFP = [],field_high_pass = [], field_label = [
         LFP = list2array(norm_LFP(get_field_mat(data,field_LFP),sampling_freq))
         high_pass = list2array(get_field_mat(data,field_high_pass))
         Label = list2array(get_field_mat(data,field_label))
-        Intervs = list2array(get_field_mat(df,field_intervs))
+        Intervs = list2array(get_field_mat(data,field_intervs))
     elif file_extension == '.csv':
         LFP = list2array(norm_LFP(np.loadtxt(field_LFP,delimiter=','),sampling_freq))
         high_pass = list2array(np.loadtxt(field_high_pass,delimiter=','))
         Label = list2array(np.loadtxt(field_label,delimiter=','))
-        Intervs = list2array(field_label(df,field_intervs))
+        Intervs = list2array(np.loadtxt(field_intervs,delimiter=','))
     high_pass = norm_high_pass(high_pass) 
     return(LFP,high_pass,Label,Intervs)
 
