@@ -37,6 +37,23 @@ from scipy.signal import butter, lfilter
 from scipy import signal as signal
 
 
+# function selecting and concatenating together segments containing at least 1 compex spike
+def concatenate_segments(LFP,HIGH,Interval_inspected,Labels):
+    seg = Interval_inspected.copy()==1
+    starts = np.where(np.concatenate(([0],np.diff(seg)==1)))[0]
+    ends = np.where(np.concatenate(([0],np.diff(seg)==-1)))[0]
+    if seg[-1] == 1:
+        ends = np.concatenate(ends,len(seg)-1)
+    for s,e in zip(starts,ends):
+        if sum(labels[s:e])>0:
+            print('found')
+        else:
+            seg[s:e] = False
+    compLFP = LFP[seg]
+    compHIGH = HIGH[seg]
+    compLabels = Labels[seg]
+    return (compLFP,compHIGH,compLabels)
+
 def get_field_mat(data,fields): # go through structure in a .mat file to find the variable
     
     if len(fields) == 0:
