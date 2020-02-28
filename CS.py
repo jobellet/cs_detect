@@ -435,7 +435,6 @@ def detect_CS(weights_name, LFP, High_passed, output_name = None,  sampling_freq
                   
     if plot:    
         xlabel('time from CS onset (ms)',fontsize=15)
-        ylabel('Voltage (uV)',fontsize=15)
         ax1.spines['top'].set_visible(False)
         ax1.spines['right'].set_visible(False)
         ax1.set_facecolor('none')
