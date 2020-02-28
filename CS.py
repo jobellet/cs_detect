@@ -320,7 +320,7 @@ def detect_CS(weights_name, LFP, High_passed, output_name = None,  sampling_freq
             lag = (np.argmax(c)-c.size/2)+.5
             corrected_on[i]=int(j-lag)
     else:     
-        corrected_on = cs_onset
+        corrected_on = cs_onset.astype(int)
       
     if cluster == False: # if only the realignment of onsets was needed
         cs_onset = corrected_on
