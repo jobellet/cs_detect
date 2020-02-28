@@ -292,7 +292,7 @@ def detect_CS(weights_name, LFP, High_passed, output_name = None,  sampling_freq
     veto_wind = [min(plot_window[0],veto_wind[0]),max(plot_window[1],veto_wind[1])]
     
     # remove CSs detected to close from the edges of the signal
-    not_too_close = np.logical_and((cs_onset>-veto_wind[0]),(cs_offset<len(Prediction)-veto_wind[1]))
+    not_too_close = np.logical_and((cs_onset>-veto_wind[0]),(cs_offset<(len(Prediction)-veto_wind[1])))
     cs_offset = cs_offset[not_too_close]
     cs_onset = cs_onset[not_too_close]
 
