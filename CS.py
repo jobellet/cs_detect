@@ -199,7 +199,7 @@ def nothingfound(output_name): # when no CS are found
         print('saving '+output_name)
         save_data(output_name,labels)
     return (labels)   
-def detect_CS(weights_name, LFP, High_passed, output_name = None,  sampling_frequency = 25000, ks=9,mp=7, exlude_w = 3,realign = True, alignment_w = (-.5,2), cluster = True, cluster_w = (-2,2),plot = False, plot_w= (-4,8),plot_only_good = True):
+def detect_CS(weights_name, LFP, High_passed, output_name = None,  sampling_frequency = 25000, ks=9,mp=7, exlude_w = 3,realign = True, alignment_w = (-.5,2), cluster = True, cluster_w = (0,2),plot = False, plot_w= (-4,8),plot_only_good = True):
     # important arguments:
     # -filename is the filename path. If it is not defined then you should input the LFP and the High-passed signal
     # -weights_name is the path of the weight or just the name of the weight if it is stored in /training
