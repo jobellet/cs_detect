@@ -35,6 +35,9 @@ To detect complex spikes on your data, click on this link:
 https://colab.research.google.com/github/jobellet/detect_CS/blob/master/predict_cs.ipynb
 
 
+
+
+
 ### <a name="docker">Docker:</a> the platform independ and local solution
 
 **1)** Install docker:
@@ -44,11 +47,13 @@ for [Windows](https://docs.docker.com/docker-for-windows/install/#download-docke
 You will need to create an account.
 
 
+
 **2)** Download the docker image that contains the detect_cs software. 
 
 run the docker app and then write in your terminal: docker pull joachimbellet/detect_cs
 
 This will download an image containing python and all the dependencies that our algorithm requires (it might take some times).
+
 
 
 **3)** Launch the docker container.
@@ -62,6 +67,9 @@ In YourPath write the path on your machine that you want the container to access
 !! Important: Now, don't just copy the output of the into your browser, but do the following:
 
 Open your web browser. Enter "localhost:6688" as URL. Then you will be asked for a token. This token appeared when you entered the command above. It looks something like this: http://6688:8888/?token=775c758f58cdc82bf6ddf51a112228f4dd4229c5b3847bb1 . Copy the token (in this case 775c758f58cdc82bf6ddf51a112228f4dd4229c5b3847bb1) and log in. Now you should see the content of your folder in the web browser.
+
+
+
 
 **4)** Start using detect_cs
 
