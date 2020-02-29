@@ -46,11 +46,10 @@ for [Windows](https://docs.docker.com/docker-for-windows/install/#download-docke
 
 You will need to create an account.
 
-
-
 **2)** Download the docker image that contains the detect_cs software. 
 
-run the docker app and then write in your terminal: docker pull joachimbellet/detect_cs
+run the docker app and then write in your terminal:
+ docker pull joachimbellet/detect_cs
 
 This will download an image containing python and all the dependencies that our algorithm requires (it might take some times).
 
@@ -60,7 +59,8 @@ This will download an image containing python and all the dependencies that our 
 
 Docker launches a virtual machine that can only access to your local files if you instruct it to.
 
-write in your terminal: docker run -it -p 6888:8888 -v /YourPath:/home/jovyan/work
+write in your terminal: 
+ docker run -it -p 6888:8888 -v /YourPath:/home/jovyan/work
 
 In YourPath write the path on your machine that you want the container to access to.
 
