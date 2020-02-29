@@ -74,4 +74,4 @@ Open your web browser. Enter "localhost:6688" as URL. Then you will be asked for
  
 **4)** Start using detect_cs
 
-Click on the jupyter tutorial and follow the instructions. The folder 'work' will contain the path that you entered in the previous step.
+Click on the jupyter notebook tutorial and follow the instructions. The folder 'work' will contain the path that you entered in the previous step.
