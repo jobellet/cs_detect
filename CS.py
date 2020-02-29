@@ -320,7 +320,7 @@ def detect_CS(weights_name, LFP, High_passed, output_name = None,  sampling_freq
             lag = (np.argmax(c)-c.size/2)+.5
             corrected_on[i]=int(j-lag)
     else:     
-        corrected_on = np.concatenate(cs_onset.astype(int))
+        corrected_on = cs_onset.astype(int)
       
     if cluster == False: # if only the realignment of onsets was needed
         cs_onset = corrected_on
@@ -454,11 +454,12 @@ def detect_CS(weights_name, LFP, High_passed, output_name = None,  sampling_freq
     cs_offset = cs_offset[include]
     
     cs_onset = cs_onset.astype('int')
-    if len(cs_onset)>0: 
+    try: 
         cs_onset = np.concatenate(cs_onset)
-    else: # some times no complex spikes end up being detected
-        labels = nothingfound(output_name)
-        return(labels)
+    except: 
+        if len(cs_onset)==0: # some times no complex spikes end up being detected
+            labels = nothingfound(output_name)
+            return(labels)
     cs_offset = cs_offset.astype('int')
 
     labels = {'cs_onset':cs_onset,
