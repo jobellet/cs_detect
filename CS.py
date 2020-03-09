@@ -46,7 +46,7 @@ def concatenate_segments(LFP,HIGH,Interval_inspected,Labels):
         ends = np.concatenate(ends,len(seg)-1)
     for s,e in zip(starts,ends):
         if sum(labels[s:e])>0:
-            print('found')
+            
         else:
             seg[s:e] = False
     compLFP = LFP[seg]
@@ -322,7 +322,6 @@ def detect_CS(weights_name, LFP, High_passed, output_name = None,  sampling_freq
     if len(cs_onset) == 0:
         labels = nothingfound(output_name)
         return(labels)
-    print('325')
     ######################################## 
     # post processing
     ########################################
