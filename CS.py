@@ -93,8 +93,13 @@ def list2array(mylist): # convert a list into an array of segments of equal leng
             myarray = np.zeros((len(mylist),mindur))
             for i in range(len(mylist)):
                 myarray[i,:] = mylist[i][:mindur]
+            if len(myarray.shape)>1:
+                if myarray.shape[0] == 1:
+                    myarray = myarray.squeeze()
     else:
         myarray = []
+
+    
     return(myarray)
   
 
@@ -152,21 +157,22 @@ def load_data(filename = [],field_LFP = [],field_high_pass = [], field_label = [
     if file_extension == '.pkl':
         df = pd.read_pickle(filename)
         LFP = list2array(norm_LFP(get_field_pkl(df,field_LFP),sampling_freq))
-        high_pass = list2array(get_field_pkl(df,field_high_pass))
+        high_pass = get_field_pkl(df,field_high_pass)
         Label = list2array(get_field_pkl(df,field_label))
         Intervs = list2array(get_field_pkl(df,field_intervs))
     elif file_extension == '.mat':
-        data = mat4py.loadmat(filename)
+        #data = mat4py.loadmat(filename)
+        data = io.loadmat(filename)
         LFP = list2array(norm_LFP(get_field_mat(data,field_LFP),sampling_freq))
-        high_pass = list2array(get_field_mat(data,field_high_pass))
+        high_pass = get_field_mat(data,field_high_pass)
         Label = list2array(get_field_mat(data,field_label))
         Intervs = list2array(get_field_mat(data,field_intervs))
     elif file_extension == '.csv':
         LFP = list2array(norm_LFP(np.loadtxt(field_LFP,delimiter=','),sampling_freq))
-        high_pass = list2array(np.loadtxt(field_high_pass,delimiter=','))
+        high_pass = np.loadtxt(field_high_pass,delimiter=',')
         Label = list2array(np.loadtxt(field_label,delimiter=','))
         Intervs = list2array(np.loadtxt(field_intervs,delimiter=','))
-    high_pass = norm_high_pass(high_pass) 
+    high_pass = list2array(norm_high_pass(high_pass))
     return(LFP,high_pass,Label,Intervs)
 
 def save_data(output_file,labels):
@@ -199,7 +205,7 @@ def nothingfound(output_name): # when no CS are found
         print('saving '+output_name)
         save_data(output_name,labels)
     return (labels)   
-def detect_CS(weights_name, LFP, High_passed, output_name = None,  sampling_frequency = 25000, ks=9,mp=7, exlude_w = 3,realign = True, alignment_w = (-.5,2), cluster = True, cluster_w = (0,2),plot = False, plot_w= (-4,8),plot_only_good = True):
+def detect_CS(weights_name, LFP, High_passed, output_name = None,  sampling_frequency = 25000, ks=9,mp=7, exlude_w = 3,realign = True, alignment_w = (-.5,2), cluster = True, cluster_w = (-2,2),plot = False, plot_w= (-4,8),plot_only_good = True):
     # important arguments:
     # -filename is the filename path. If it is not defined then you should input the LFP and the High-passed signal
     # -weights_name is the path of the weight or just the name of the weight if it is stored in /training
@@ -214,14 +220,17 @@ def detect_CS(weights_name, LFP, High_passed, output_name = None,  sampling_freq
         labels = nothingfound(output_name)
         return(labels)
     
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    
     trial_length = 1 #sec, length per "trial"
-    trial_length *= samp*1000
+    trial_length *= int(samp*1000)
+    overlap = 0.1 #sec, length of overlap
+    overlap *= int(samp*1000)
     if np.max(LFP.shape)>trial_length:
         # preprocessing: cut recording into overlapping pieces because the network can't deal with really big signals
         total_length = np.max(LFP.shape) #total recording length
         
-        overlap = 0.1 #sec, length of overlap
-        overlap *= samp*1000
+        
         if np.floor(total_length/(trial_length-overlap))<(total_length-overlap)/(trial_length-overlap):
             num_steps = int(np.floor(total_length/(trial_length-overlap)))
         else:
@@ -246,8 +255,20 @@ def detect_CS(weights_name, LFP, High_passed, output_name = None,  sampling_freq
         LFP_mat = LFP
         High_mat = High_passed
     # U'n'Eye
+    
     model = uneye.DNN(ks=ks,mp=mp,weights_name=weights_name,sampfreq=sampling_frequency,min_sacc_dur=1,doDiff = False)
-    Pred,Prob = model.predict(LFP_mat,High_mat)
+
+    if device.type == 'cpu': # if no GPU, loop through every segments
+        Pred = np.zeros((LFP_mat.shape[0],trial_length))
+        Prob = np.zeros((LFP_mat.shape[0],2,trial_length))
+
+        for i in range(LFP_mat.shape[0]):
+            Pred[i,:],Prob[i,:,:] = model.predict(LFP_mat[i,:],High_mat[i,:]) 
+        LFP_mat = None
+        High_mat = None
+        
+    else: # if GPU, process all segments at ones
+        Pred,Prob = model.predict(LFP_mat,High_mat)
     
     if np.max(LFP.shape)>trial_length:
         # recover original shape
@@ -266,6 +287,8 @@ def detect_CS(weights_name, LFP, High_passed, output_name = None,  sampling_freq
     else:
         Prediction = Pred
         Probability = Prob
+    Pred = None
+    Prob = None
     cs_onset=np.argwhere(np.diff(Prediction)==1);
     cs_offset=np.argwhere(np.diff(Prediction)==-1);
     cs_onset = np.concatenate(cs_onset)
@@ -292,14 +315,14 @@ def detect_CS(weights_name, LFP, High_passed, output_name = None,  sampling_freq
     veto_wind = [min(plot_window[0],veto_wind[0]),max(plot_window[1],veto_wind[1])]
     
     # remove CSs detected to close from the edges of the signal
-    not_too_close = np.logical_and((cs_onset>-veto_wind[0]),(cs_offset<(len(Prediction)-veto_wind[1])))
+    not_too_close = np.logical_and((cs_onset>-veto_wind[0]),(cs_offset<len(Prediction)-veto_wind[1]))
     cs_offset = cs_offset[not_too_close]
     cs_onset = cs_onset[not_too_close]
 
     if len(cs_onset) == 0:
         labels = nothingfound(output_name)
         return(labels)
-    
+    print('325')
     ######################################## 
     # post processing
     ########################################
@@ -320,7 +343,7 @@ def detect_CS(weights_name, LFP, High_passed, output_name = None,  sampling_freq
             lag = (np.argmax(c)-c.size/2)+.5
             corrected_on[i]=int(j-lag)
     else:     
-        corrected_on = cs_onset.astype(int)
+        corrected_on = cs_onset
       
     if cluster == False: # if only the realignment of onsets was needed
         cs_onset = corrected_on
@@ -435,6 +458,7 @@ def detect_CS(weights_name, LFP, High_passed, output_name = None,  sampling_freq
                   
     if plot:    
         xlabel('time from CS onset (ms)',fontsize=15)
+        ylabel('Voltage (uV)',fontsize=15)
         ax1.spines['top'].set_visible(False)
         ax1.spines['right'].set_visible(False)
         ax1.set_facecolor('none')
@@ -456,10 +480,9 @@ def detect_CS(weights_name, LFP, High_passed, output_name = None,  sampling_freq
     cs_onset = cs_onset.astype('int')
     try: 
         cs_onset = np.concatenate(cs_onset)
-    except: 
-        if len(cs_onset)==0: # some times no complex spikes end up being detected
-            labels = nothingfound(output_name)
-            return(labels)
+    except: # some times no complex spikes end up being detected
+        labels = nothingfound(output_name)
+        return(labels)
     cs_offset = cs_offset.astype('int')
 
     labels = {'cs_onset':cs_onset,
@@ -473,3 +496,4 @@ def detect_CS(weights_name, LFP, High_passed, output_name = None,  sampling_freq
     
     
     
+
