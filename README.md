@@ -32,8 +32,7 @@ This will train a network whose weights can be used later to detect complex spik
  
  
 **STEP 3: Detect complex spikes**
-To detect complex spikes in your data, click on this link:  
-https://colab.research.google.com/github/jobellet/detect_CS/blob/master/predict_cs.ipynb
+To detect complex spikes in your data, click on [this link](https://colab.research.google.com/github/jobellet/detect_CS/blob/master/install_detect_cs.ipynb)
  
  
  
