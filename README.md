@@ -18,7 +18,7 @@ The software is written in python. You can use the software online using [Colabo
  
 **STEP 1: Installing the software (you need to do this step only once)**  
 To install the software, click on this link:   
-https://colab.research.google.com/github/jobellet/detect_CS/blob/master/install_cs_detect.ipynb
+https://colab.research.google.com/github/jobellet/detect_CS/blob/master/install_detect_cs.ipynb
 
 This will create a folder named ‘uneye’ in your google drive account where all the scripts and network weights will be stored
  
