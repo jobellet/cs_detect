@@ -208,11 +208,11 @@ def create_random_intervals(sampling_rate,LFP,Labels):
     new_label = np.zeros_like(LFP).astype(bool);
     Interval_inspected = np.zeros_like(LFP).astype(bool);
     if len(Labels.shape)==1:
-        onsets = np.where(np.concatenate((Labels[0]==1,np.diff(Labels)>0)))
-        offsets = np.where(np.concatenate((np.diff(Labels)<0,Labels[-1]==1)))
+        onsets = np.where(np.hstack((Labels[0]==1,np.diff(Labels)>0)))[0]
+        offsets = np.where(np.hstack((np.diff(Labels)<0,Labels[-1]==1)))[0]
     else:
         onsets = Labels[:,0]
-        offsets = Labels[:,1]
+        offset = Labels[:,1]
     
     for o,e in zip(onsets,offsets):
             new_label[o:e] = True
