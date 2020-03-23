@@ -23,7 +23,7 @@ This will create a folder named ‘uneye’ in your google drive account where a
  
  
  
-**STEP 2: Train your network** 
+**STEP 2: Train your network**    
 To train a network, click on [this link](https://colab.research.google.com/github/jobellet/detect_CS/blob/master/train_cs_detector.ipynb)
 
 This will train a network whose weights can be used later to detect complex spikes. Please look in the [tutorial](https://colab.research.google.com/github/jobellet/detect_CS/blob/master/Tutorial_detect_cs.ipynb) for an example of how to preprocess the data before training.
