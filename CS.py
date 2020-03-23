@@ -56,22 +56,12 @@ def get_field_mat(data,fields): # go through structure in a .mat file to find th
     
     if len(fields) == 0:
         return([])
-    if type(fields[0]) == list:
-        for j in range(len(fields)): # if the variable can have different names
-            try:
-                data2 = data
-                for i,subfield in enumerate(fields[j]):
-                    data = data[subfield]
-                return(data)
-            except:
-                print('trying an other field name')
-                data = data2
-    else:
-        for i,field in enumerate(fields):
+    for i,field in enumerate(fields):
             data = data[field]
-        return(data)
-        
-      
+    while len(data)==1:
+        data = data[0]
+    return(data)
+            
 def get_field_pkl(df,field): # get the variable in a panda dataframe
     if field != None:
         data = np.array(df[field])
