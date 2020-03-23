@@ -42,7 +42,8 @@ To detect complex spikes in your data, click on [this link](https://colab.resear
 
 for [Windows](https://docs.docker.com/docker-for-windows/install/#download-docker-for-windows), [Mac](https://store.docker.com/editions/community/docker-ce-desktop-mac) or [Ubuntu](https://docs.docker.com/install/linux/docker-ce/ubuntu/#set-up-the-repository)
 
-You will need to create an account.
+You will need to create an account. 
+For windows user: Once the docker is installed on your machine, you will see the app icon in your task bar. Right click on the icon and select "Switch to Linux containers". You are now ready to type in the terminal.   
 
 **2) Download the docker image that contains the detect_cs software:** 
 
@@ -63,7 +64,7 @@ Type the following command in your terminal:
     
 In YourPath write the path on your machine that you want the container to access to. On Unix machine, you might need to write '/' before your path. This folder contains the data you want to analyse.
 
-!! Important: DO NOT copy the output of the into your browser, but do the following:
+!! Important: DO NOT copy the output of the command into your browser, but do the following:
  
 Open your web browser. Enter "localhost:6888" as URL. Then you will be asked for a token.
 This token appeared in your terinal when you entered the command above. It looks something like this: http://6688:8888/?token=775c758f58cdc82bf6ddf51a112228f4dd4229c5b3847bb1 . Copy the token (in this case 775c758f58cdc82bf6ddf51a112228f4dd4229c5b3847bb1) 
