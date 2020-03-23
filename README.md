@@ -66,7 +66,7 @@ In YourPath write the path on your machine that you want the container to access
 
 !! Important: DO NOT copy the output of the command into your browser, but do the following:
  
-Open your web browser. Enter "localhost:6888" as URL. Then you will be asked for a token.
+Open your web browser. Enter "**localhost:6888**" as URL. Then you will be asked for a token.
 This token appeared in your terinal when you entered the command above. It looks something like this: http://6688:8888/?token=775c758f58cdc82bf6ddf51a112228f4dd4229c5b3847bb1 . Copy the token (in this case 775c758f58cdc82bf6ddf51a112228f4dd4229c5b3847bb1) 
 Log in with the token that you saved/copied in the previous step.
 Now you should see the content of your folder in the web browser.
