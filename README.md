@@ -17,16 +17,14 @@ The software is written in python. You can use the software online using [Colabo
 ### <a name="Colaboratory">Colaboratory:</a> the platform independent and online solution
  
 **STEP 1: Installing the software (you need to do this step only once)**  
-To install the software, click on [this link]   
-(https://colab.research.google.com/github/jobellet/detect_CS/blob/master/install_detect_cs.ipynb)
+To install the software, click on [this link](https://colab.research.google.com/github/jobellet/detect_CS/blob/master/install_detect_cs.ipynb)
 
 This will create a folder named ‘uneye’ in your google drive account where all the scripts and network weights will be stored
  
  
  
 **STEP 2: Train your network** 
-To train a network, click on [this link] 
-(https://colab.research.google.com/github/jobellet/detect_CS/blob/master/train_cs_detector.ipynb)
+To train a network, click on [this link](https://colab.research.google.com/github/jobellet/detect_CS/blob/master/train_cs_detector.ipynb)
 
 This will train a network whose weights can be used later to detect complex spikes. Please look in the [tutorial](https://colab.research.google.com/github/jobellet/detect_CS/blob/master/Tutorial_detect_cs.ipynb) for an example of how to preprocess the data before training.
  
