@@ -101,43 +101,31 @@ def butter_bandpass(lowcut, highcut, fs, order=5):
 def norm_LFP(LFP,sampling_freq): # normalise the LFP for the network
     if len(LFP) > 0:
 
-        types = [hasattr(LFP[i],"__len__") for i in range(len(LFP))]
-        if all(types) == 0 : #surely a vector
-            LFP = np.asarray(LFP)
+        LFP = np.asarray(LFP)
 
-            b, a = butter_bandpass(30, 400, sampling_freq, order = 2)
+        b, a = butter_bandpass(30, 400, sampling_freq, order = 2)
 
-            LFP =  signal.filtfilt(b, a, np.double(np.asarray(LFP)))
-            LFP /= np.median(np.abs(LFP))
+        LFP =  signal.filtfilt(b, a, np.double(np.asarray(LFP)))
+        LFP /= np.median(np.abs(LFP))
 
 
-        else:
-            # normalise LFP as a multiple of absolute median
-            b, a = butter_bandpass(30, 400, sampling_freq, order = 2)
-            LFP = [signal.filtfilt(b, a, np.double(np.asarray(i))) for i in LFP ]
-            LFP = [i/np.median(np.abs(i)) for i in LFP ]
     else:
         LFP = []
     return(LFP)
 
 def norm_high_pass(high_pass): # normalise the high pass signal for the network
     if len(high_pass) > 0:
+        high_pass = np.asarray(high_pass)
+        high_pass = np.double(high_pass)
+        high_pass /= np.median(np.abs(high_pass))
 
-        types = [hasattr(high_pass[i],"__len__") for i in range(len(high_pass))]
-        if all(types) == 0 : #surely a vector
-            high_pass = np.asarray(high_pass)
-            high_pass = np.double(high_pass)
-            high_pass /= np.median(np.abs(high_pass))
 
-        else:
-            # normalise high_pass as a multiple of absolute median
-            high_pass = [i/np.median(np.abs(i)) for i in high_pass ]
     else:
         high_pass = []
     return(high_pass)
 
 
-def load_data(filename = [],field_LFP = [],field_high_pass = [], field_label = [],field_intervs = [],sampling_freq = 25000):
+def load_data(filename = [],field_LFP = [],field_high_pass = [], field_label = [],field_intervs = [],sampling_freq = 25000,kernel_dies = False):
     # loads the data for .mat .pkl or .csv
     if len(filename) == 0:
         filename = field_LFP
@@ -150,11 +138,23 @@ def load_data(filename = [],field_LFP = [],field_high_pass = [], field_label = [
         Intervs = (get_field_pkl(df,field_intervs))
     elif file_extension == '.mat':
         data = io.loadmat(filename)
-        LFP = (norm_LFP(get_field_mat(data,field_LFP),sampling_freq))
+        LFP = get_field_mat(data,field_LFP)
+
+        if not(kernel_dies):
+            LFP = norm_LFP(LFP,sampling_freq)
+        else:
+            temp = [];
+            chunk = 5000000
+            n = int(np.ceil(len(LFP)/chunk))
+            for i in range(n):
+                    temp.append(norm_LFP(LFP[i*chunk:int(np.min(((i+1)*chunk,len(LFP)-1)))],sampling_freq))
+            LFP = np.concatenate(temp)
+            temp = None
         high_pass = get_field_mat(data,field_high_pass)
         Label = (get_field_mat(data,field_label))
         Intervs = (get_field_mat(data,field_intervs))
     elif file_extension == '.csv':
+
         LFP = (norm_LFP(np.loadtxt(field_LFP,delimiter=','),sampling_freq))
         high_pass = np.loadtxt(field_high_pass,delimiter=',')
         Label = (np.loadtxt(field_label,delimiter=','))
@@ -494,3 +494,4 @@ def detect_CS(weights_name, LFP, High_passed, output_name = None,  sampling_freq
         print('saving '+output_name)
         save_data(output_name,labels)
     return(labels)
+                                                                                                                                                                                                                                                                                                                            
