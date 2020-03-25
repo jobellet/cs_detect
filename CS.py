@@ -144,23 +144,22 @@ def load_data(filename = [],field_LFP = [],field_high_pass = [], field_label = [
     filename_start, file_extension = os.path.splitext(filename)
     if file_extension == '.pkl':
         df = pd.read_pickle(filename)
-        LFP = list2array(norm_LFP(get_field_pkl(df,field_LFP),sampling_freq))
+        LFP = (norm_LFP(get_field_pkl(df,field_LFP),sampling_freq))
         high_pass = get_field_pkl(df,field_high_pass)
-        Label = list2array(get_field_pkl(df,field_label))
-        Intervs = list2array(get_field_pkl(df,field_intervs))
+        Label = (get_field_pkl(df,field_label))
+        Intervs = (get_field_pkl(df,field_intervs))
     elif file_extension == '.mat':
-        #data = mat4py.loadmat(filename)
         data = io.loadmat(filename)
-        LFP = list2array(norm_LFP(get_field_mat(data,field_LFP),sampling_freq))
+        LFP = (norm_LFP(get_field_mat(data,field_LFP),sampling_freq))
         high_pass = get_field_mat(data,field_high_pass)
-        Label = list2array(get_field_mat(data,field_label))
-        Intervs = list2array(get_field_mat(data,field_intervs))
+        Label = (get_field_mat(data,field_label))
+        Intervs = (get_field_mat(data,field_intervs))
     elif file_extension == '.csv':
-        LFP = list2array(norm_LFP(np.loadtxt(field_LFP,delimiter=','),sampling_freq))
+        LFP = (norm_LFP(np.loadtxt(field_LFP,delimiter=','),sampling_freq))
         high_pass = np.loadtxt(field_high_pass,delimiter=',')
-        Label = list2array(np.loadtxt(field_label,delimiter=','))
-        Intervs = list2array(np.loadtxt(field_intervs,delimiter=','))
-    high_pass = list2array(norm_high_pass(high_pass))
+        Label = (np.loadtxt(field_label,delimiter=','))
+        Intervs = (np.loadtxt(field_intervs,delimiter=','))
+    high_pass = (norm_high_pass(high_pass))
     return(LFP,high_pass,Label,Intervs)
 
 def save_data(output_file,labels):
