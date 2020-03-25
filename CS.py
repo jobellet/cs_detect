@@ -195,20 +195,18 @@ def nothingfound(output_name): # when no CS are found
     return (labels)
 
 def create_random_intervals(sampling_rate,LFP,Labels):
-    new_label = np.zeros_like(LFP).astype(bool);
     Interval_inspected = np.zeros_like(LFP).astype(bool);
     if len(Labels.shape)==1:
+        Labels = Labels.astype(float)
         onsets = np.where(np.hstack((Labels[0]==1,np.diff(Labels)>0)))[0]
         offsets = np.where(np.hstack((np.diff(Labels)<0,Labels[-1]==1)))[0]
     else:
         onsets = Labels[:,0]
-        offset = Labels[:,1]
-
+        offsets = Labels[:,1]
     for o,e in zip(onsets,offsets):
-            new_label[o:e] = True
             shifto = np.random.randint(sampling_rate/5)
             shifte = np.random.randint(sampling_rate/5)
-            Interval_inspected[np.max(0,o-shifto):np.min(e+shifte,len(LFP)-1)] = True
+            Interval_inspected[np.max((0,o-shifto)):np.min((e+shifte,len(LFP)-1))] = True
     return(Interval_inspected)
 def detect_CS(weights_name, LFP, High_passed, output_name = None,  sampling_frequency = 25000, ks=9,mp=7, exlude_w = 3,realign = True, alignment_w = (-.5,2), cluster = True, cluster_w = (-2,2),plot = False, plot_w= (-4,8),plot_only_good = True):
     # important arguments:
