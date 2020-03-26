@@ -80,9 +80,9 @@ Now please follow the following instructions:
 This will create four folders in your 'work' folder with the following names:
    (i)**TrainYourNetwork:** Here you should add files (.mat) that contain data for training your network. Briefly, each file should                                  contain brief segments (you do not need entire Purkinje cell recordings for training!) of the following                                  variables:
   
-                            (a) **High band-passed signal**
-                            (b) **LFP signals** (same dimesnions as High-passed signals)
-                            (c) **Labeled segments that you labeled manually with same dimensions as High-passed and LFP signals. This 
+                   (1) **High band-passed signal**
+                   (2) **LFP signals** (same dimesnions as High-passed signals)
+                   (3) **Labeled segments that you labeled manually with same dimensions as High-passed and LFP signals. This 
                                   file contains 'ones' (from the beginning to the end of Complex spikes that you labelled) and 'zeros'
                                   elsewhere.
   
