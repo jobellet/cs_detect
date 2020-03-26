@@ -76,6 +76,7 @@ After opening your web browser (**localhost:6888** as URL), you should see a fol
 Now please follow the following instructions:
 
 **Step 1:** Open the scirpt named **Initialize.ipynb** and run it.
+
 This will create four folders in your 'work' folder with the following names:
 
 (i) **TrainYourNetwork:** Here you should add files (.mat) that contain data for training your network. Briefly, each file should                                  contain brief segments (you do not need entire Purkinje cell recordings for training!) of the following                                  variables:
