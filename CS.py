@@ -7,6 +7,10 @@ import torch
 # to read .mat files
 import mat4py
 
+#!pip install mat73
+import mat73
+
+
 # to read .pkl files
 import pandas as pd
 
@@ -137,7 +141,10 @@ def load_data(filename = [],field_LFP = [],field_high_pass = [], field_label = [
         Label = (get_field_pkl(df,field_label))
         Intervs = (get_field_pkl(df,field_intervs))
     elif file_extension == '.mat':
-        data = io.loadmat(filename)
+        try:
+            data = io.loadmat(filename)
+        except: # perhaps the .mat file is a -v7.3 format
+            data = mat73.loadmat(filename)
         LFP = get_field_mat(data,field_LFP)
 
         if not(kernel_dies):
