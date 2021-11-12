@@ -1,3 +1,7 @@
+#install umap
+!pip install umap-learn
+# to do clustering
+!pip install hdbscan
 
 ## install dependencies
 import os
@@ -7,7 +11,7 @@ import torch
 # to read .mat files
 import mat4py
 
-#!pip install mat73
+!pip install mat73
 import mat73
 
 
